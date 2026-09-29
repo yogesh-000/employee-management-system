@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
+    Optional<Employee> findByUser_Username(String username);
+
     Optional<Employee> findByEmail(String email);
 
     Optional<Employee> findByIdAndIsDeletedFalse(Long id);
@@ -34,4 +36,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             String phone,
             Long id
     );
+
+    long countByDepartmentIdAndIsDeletedFalse(Long departmentId);
 }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -26,6 +27,7 @@ public class LeaveTypeController {
 
     private final LeaveTypeService leaveTypeService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ApiResponse<LeaveTypeResponse> createLeaveType(
             @Valid @RequestBody LeaveTypeRequest request
@@ -85,6 +87,7 @@ public class LeaveTypeController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ApiResponse<LeaveTypeResponse> updateLeaveType(
             @PathVariable Long id,
@@ -101,6 +104,7 @@ public class LeaveTypeController {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteLeaveType(
             @PathVariable Long id

@@ -2,6 +2,7 @@ package com.yogesh.employee_management_system.service.impl;
 
 import com.yogesh.employee_management_system.dto.employee.EmployeeRequest;
 import com.yogesh.employee_management_system.dto.employee.EmployeeResponse;
+import com.yogesh.employee_management_system.dto.employee.EmployeeUpdateRequest;
 import com.yogesh.employee_management_system.entity.Department;
 import com.yogesh.employee_management_system.entity.Employee;
 import com.yogesh.employee_management_system.entity.Role;
@@ -158,7 +159,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public EmployeeResponse updateEmployee(Long id, EmployeeRequest request) {
+    public EmployeeResponse updateEmployee(Long id, EmployeeUpdateRequest request) {
 
         logger.info("Updating employee with ID: {}", id);
         Employee employee = employeeRepository.findByIdAndIsDeletedFalse(id)

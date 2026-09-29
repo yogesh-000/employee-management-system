@@ -42,6 +42,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         log.info("JWT generated successfully for {}", request.getUsername());
 
-        return new LoginResponse(token);
+        String role= userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(a-> a.getAuthority().replace("ROLE_", ""))
+                .orElse("EMPLOYEE");
+
+        return new LoginResponse(token, userDetails.getUsername(), role);
     }
 }

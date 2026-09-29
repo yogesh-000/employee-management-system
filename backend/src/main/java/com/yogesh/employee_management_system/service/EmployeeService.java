@@ -2,6 +2,7 @@ package com.yogesh.employee_management_system.service;
 
 import com.yogesh.employee_management_system.dto.employee.EmployeeRequest;
 import com.yogesh.employee_management_system.dto.employee.EmployeeResponse;
+import com.yogesh.employee_management_system.dto.employee.EmployeeUpdateRequest;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface EmployeeService {
 
     EmployeeResponse getEmployeeById(Long id);
 
-    EmployeeResponse updateEmployee(Long id, EmployeeRequest request);
+    EmployeeResponse updateEmployee(Long id, EmployeeUpdateRequest request);
 
     void deleteEmployee(Long id);
 

@@ -3,6 +3,7 @@ package com.yogesh.employee_management_system.controller;
 import com.yogesh.employee_management_system.dto.common.ApiResponse;
 import com.yogesh.employee_management_system.dto.employee.EmployeeRequest;
 import com.yogesh.employee_management_system.dto.employee.EmployeeResponse;
+import com.yogesh.employee_management_system.dto.employee.EmployeeUpdateRequest;
 import com.yogesh.employee_management_system.service.EmployeeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +29,7 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ApiResponse<EmployeeResponse> createEmployee(@Valid @RequestBody EmployeeRequest request) {
         EmployeeResponse response = employeeService.createEmployee(request);
@@ -39,6 +42,7 @@ public class EmployeeController {
                 .build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @GetMapping
     public ApiResponse<Page<EmployeeResponse>> getAllEmployees(
             @RequestParam(defaultValue = "0") int page,
@@ -68,6 +72,7 @@ public class EmployeeController {
                 .build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @GetMapping("/search")
     public ApiResponse<Page<EmployeeResponse>> searchEmployees(
             @RequestParam String keyword,
@@ -94,19 +99,22 @@ public class EmployeeController {
                 .build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @GetMapping("/{id}")
     public EmployeeResponse getEmployeeById(@PathVariable Long id) {
         return employeeService.getEmployeeById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public EmployeeResponse updateEmployee(
             @PathVariable Long id,
-            @Valid @RequestBody EmployeeRequest request
+            @Valid @RequestBody EmployeeUpdateRequest request
     ) {
         return employeeService.updateEmployee(id, request);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);

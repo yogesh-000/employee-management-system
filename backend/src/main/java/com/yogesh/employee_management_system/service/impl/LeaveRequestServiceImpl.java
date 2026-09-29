@@ -13,6 +13,7 @@ import com.yogesh.employee_management_system.exception.ResourceNotFoundException
 import com.yogesh.employee_management_system.repository.EmployeeRepository;
 import com.yogesh.employee_management_system.repository.LeaveRequestRepository;
 import com.yogesh.employee_management_system.repository.LeaveTypeRepository;
+import com.yogesh.employee_management_system.security.SecurityUtils;
 import com.yogesh.employee_management_system.service.LeaveRequestService;
 import com.yogesh.employee_management_system.util.mapper.LeaveRequestMapper;
 import lombok.RequiredArgsConstructor;
@@ -37,19 +38,39 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     private final LeaveRequestRepository leaveRequestRepository;
 
+    private final SecurityUtils securityUtils;
+
     private final EmployeeRepository employeeRepository;
 
     private final LeaveTypeRepository leaveTypeRepository;
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<LeaveRequestResponse> getLeaveRequestsByStatus(LeaveStatus status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("appliedAt").descending());
+        Employee current = securityUtils.getCurrentEmployee();
+
+        Page<LeaveRequest> results = securityUtils.currentUserHasRole("ADMIN")
+                ? leaveRequestRepository.findByStatus(status, pageable)
+                : leaveRequestRepository.findByStatusAndEmployee_Manager_Id(status, current.getId(), pageable);
+
+        return results.map(LeaveRequestMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LeaveHistoryResponse getMyLeaveHistory() {
+        Employee current = securityUtils.getCurrentEmployee();
+        return getEmployeeLeaveHistory(current.getId());
+    }
+
+    @Override
     @Transactional
     public LeaveRequestResponse applyLeave(ApplyLeaveRequest request) {
 
-        logger.info("Employee {} is applying for leave.", request.getEmployeeId());
+        Employee employee = securityUtils.getCurrentEmployee();
 
-        Employee employee = employeeRepository.findByIdAndIsDeletedFalse(request.getEmployeeId())
-                .orElseThrow(()-> new
-                        ResourceNotFoundException("Employee not found."));
+        logger.info("Applying for leave for employee ID: {}", employee.getId());
 
         LeaveType leaveType = leaveTypeRepository.findByIdAndIsDeletedFalse(request.getLeaveTypeId())
                 .orElseThrow(()-> new
@@ -163,6 +184,13 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                 .orElseThrow(()-> new
                         ResourceNotFoundException("Employee not found."));
 
+        Employee current = securityUtils.getCurrentEmployee();
+        boolean isPrivileged = securityUtils.currentUserHasRole("ADMIN") || securityUtils.currentUserHasRole("MANAGER");
+
+        if (!isPrivileged && !current.getId().equals(employee.getId())) {   // for history — use leaveRequest's employee for cancelLeave
+            throw new BusinessValidationException("You can only access your own leave records.");
+        }
+
         List<LeaveRequest> leaveRequests = leaveRequestRepository.findByEmployee(employee);
 
         List<LeaveRequestResponse> leaveRequestResponses = leaveRequests.stream()
@@ -199,9 +227,18 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                 .orElseThrow(()-> new
                         ResourceNotFoundException("Leave request not found."));
 
-        Employee approver = employeeRepository.findByIdAndIsDeletedFalse(request.getApprovedBy())
-                .orElseThrow(()-> new
-                        ResourceNotFoundException("Approver not found."));
+        Employee approver = securityUtils.getCurrentEmployee();
+
+        if (leaveRequest.getEmployee().getId().equals(approver.getId())) {
+            throw new BusinessValidationException("You cannot approve or reject your own leave request.");
+        }
+
+        if (!securityUtils.currentUserHasRole("ADMIN")) {
+            Employee manager = leaveRequest.getEmployee().getManager();
+            if (manager == null || !manager.getId().equals(approver.getId())) {
+                throw new BusinessValidationException("You can only approve or reject leave requests for your own team.");
+            }
+        }
 
         if(leaveRequest.getStatus() != LeaveStatus.PENDING) {
             throw new BusinessValidationException(
@@ -240,6 +277,14 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         LeaveRequest leaveRequest = leaveRequestRepository.findById(leaveRequestId)
                 .orElseThrow(()-> new
                         ResourceNotFoundException("Leave request not found."));
+
+        Employee current = securityUtils.getCurrentEmployee();
+        boolean isPrivileged = securityUtils.currentUserHasRole("ADMIN")
+                || securityUtils.currentUserHasRole("MANAGER");
+
+        if (!isPrivileged && !current.getId().equals(leaveRequest.getEmployee().getId())) {
+            throw new BusinessValidationException("You can only cancel your own leave requests.");
+        }
 
         if(leaveRequest.getStatus() != LeaveStatus.PENDING) {
             throw new

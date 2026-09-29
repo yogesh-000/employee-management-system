@@ -4,6 +4,7 @@ import com.yogesh.employee_management_system.dto.leaverequest.ApplyLeaveRequest;
 import com.yogesh.employee_management_system.dto.leaverequest.LeaveApprovalRequest;
 import com.yogesh.employee_management_system.dto.leaverequest.LeaveHistoryResponse;
 import com.yogesh.employee_management_system.dto.leaverequest.LeaveRequestResponse;
+import com.yogesh.employee_management_system.enums.LeaveStatus;
 import com.yogesh.employee_management_system.service.LeaveRequestService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +26,7 @@ public class LeaveRequestController {
 
     private final LeaveRequestService leaveRequestService;
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','EMPLOYEE')")
     @PostMapping
     public ResponseEntity<LeaveRequestResponse> applyLeave(
             @Valid @RequestBody ApplyLeaveRequest request) {
@@ -34,6 +37,21 @@ public class LeaveRequestController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    @GetMapping("/status/{status}")
+    public ResponseEntity<Page<LeaveRequestResponse>> getByStatus(
+            @PathVariable LeaveStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(leaveRequestService.getLeaveRequestsByStatus(status, page, size));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<LeaveHistoryResponse> getMyLeaveHistory() {
+        return ResponseEntity.ok(leaveRequestService.getMyLeaveHistory());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @GetMapping
     public ResponseEntity<Page<LeaveRequestResponse>> getAllLeaveRequests(
 
@@ -57,6 +75,7 @@ public class LeaveRequestController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','EMPLOYEE')")
     @GetMapping("/{id}")
     public ResponseEntity<LeaveRequestResponse> getLeaveRequestById(
             @PathVariable Long id) {
@@ -66,6 +85,7 @@ public class LeaveRequestController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','EMPLOYEE')")
     @GetMapping("/history/{employeeId}")
     public ResponseEntity<LeaveHistoryResponse> getEmployeeLeaveHistory(
             @PathVariable Long employeeId) {
@@ -77,6 +97,7 @@ public class LeaveRequestController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @PutMapping("/{leaveRequestId}/approve")
     public ResponseEntity<LeaveRequestResponse> approveOrRejectLeave(
 
@@ -96,6 +117,7 @@ public class LeaveRequestController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','EMPLOYEE')")
     @PutMapping("/{leaveRequestId}/cancel")
     public ResponseEntity<LeaveRequestResponse> cancelLeave(
 
@@ -110,6 +132,7 @@ public class LeaveRequestController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @GetMapping("/search")
     public ResponseEntity<Page<LeaveRequestResponse>> searchLeaveRequests(
 

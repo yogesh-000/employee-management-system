@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class DepartmentController {
 
     private final DepartmentService departmentService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public DepartmentResponse createDepartment(
             @Valid @RequestBody DepartmentRequest request) {
@@ -35,6 +37,7 @@ public class DepartmentController {
         return departmentService.createDepartment(request);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @GetMapping
     public ApiResponse<Page<DepartmentResponse>> getAllDepartments(
             @RequestParam(defaultValue = "0") int page,
@@ -64,6 +67,7 @@ public class DepartmentController {
                 .build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @GetMapping("/search")
     public ApiResponse<Page<DepartmentResponse>> searchDepartments(
             @RequestParam String keyword,
@@ -90,11 +94,13 @@ public class DepartmentController {
                 .build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @GetMapping("/{id}")
     public DepartmentResponse getDepartmentById(@PathVariable Long id) {
         return departmentService.getDepartmentById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public DepartmentResponse updateDepartment(
             @PathVariable Long id,
@@ -103,6 +109,7 @@ public class DepartmentController {
         return departmentService.updateDepartment(id, request);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteDepartment(@PathVariable Long id) {
         departmentService.deleteDepartment(id);

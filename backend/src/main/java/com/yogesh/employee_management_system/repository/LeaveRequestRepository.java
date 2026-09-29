@@ -12,6 +12,10 @@ import java.util.Optional;
 
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long> {
 
+    Page<LeaveRequest> findByStatus(LeaveStatus status, Pageable pageable);
+
+    Page<LeaveRequest> findByStatusAndEmployee_Manager_Id(LeaveStatus status, Long managerId, Pageable pageable);
+
     Optional<LeaveRequest> findById(Long id);
 
     Page<LeaveRequest> findAll(Pageable pageable);

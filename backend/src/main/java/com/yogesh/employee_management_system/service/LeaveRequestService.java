@@ -4,9 +4,14 @@ import com.yogesh.employee_management_system.dto.leaverequest.ApplyLeaveRequest;
 import com.yogesh.employee_management_system.dto.leaverequest.LeaveApprovalRequest;
 import com.yogesh.employee_management_system.dto.leaverequest.LeaveHistoryResponse;
 import com.yogesh.employee_management_system.dto.leaverequest.LeaveRequestResponse;
+import com.yogesh.employee_management_system.enums.LeaveStatus;
 import org.springframework.data.domain.Page;
 
 public interface LeaveRequestService {
+
+    Page<LeaveRequestResponse> getLeaveRequestsByStatus(LeaveStatus status, int page, int size);
+
+    LeaveHistoryResponse getMyLeaveHistory();
 
     LeaveRequestResponse applyLeave(
             ApplyLeaveRequest request

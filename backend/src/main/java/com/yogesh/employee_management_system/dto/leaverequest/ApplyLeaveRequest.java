@@ -13,9 +13,6 @@ import java.time.LocalDate;
 @Setter
 public class ApplyLeaveRequest {
 
-    @NotNull(message = "Emoployee is required")
-    private Long employeeId;
-
     @NotNull(message = "Leave type is required")
     private Long leaveTypeId;
 

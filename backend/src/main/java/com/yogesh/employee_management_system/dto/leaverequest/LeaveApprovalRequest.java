@@ -16,7 +16,4 @@ public class LeaveApprovalRequest {
     @Size(max = 255, message = "Remarks cannot exceed 255 characters")
     private String remarks;
 
-    @NotNull(message = "Approver is required")
-    private Long approvedBy;
-
 }

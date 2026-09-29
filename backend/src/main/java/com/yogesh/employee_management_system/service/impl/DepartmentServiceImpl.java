@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.yogesh.employee_management_system.exception.BusinessValidationException;
+import com.yogesh.employee_management_system.repository.EmployeeRepository;
 
 
 @Service
@@ -26,6 +28,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     private static final Logger logger = LoggerFactory.getLogger(DepartmentServiceImpl.class);
 
     private final DepartmentRepository departmentRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Override
     public DepartmentResponse createDepartment(DepartmentRequest request) {
@@ -140,6 +143,14 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department department= departmentRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Department not found."));
+
+        long activeCount= employeeRepository.countByDepartmentIdAndIsDeletedFalse(id);
+        if(activeCount > 0){
+            throw new BusinessValidationException(
+                    "Cannot delete department with " + activeCount + " active employee(s). Reassign them first."
+            );
+        }
+
         department.setIsDeleted(true);
         departmentRepository.save(department);
 
