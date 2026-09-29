@@ -1,0 +1,48 @@
+<div class="toolbar">
+  <h2>Departments</h2>
+  <button class="primary" (click)="showForm() ? showForm.set(false) : openAdd()">
+    {{ showForm() ? 'Close' : '+ Add Department' }}
+  </button>
+</div>
+
+@if (message()) { <div class="ok">{{ message() }}</div> }
+@if (error()) { <div class="bad">{{ error() }}</div> }
+
+@if (showForm()) {
+  <form class="form" [formGroup]="form" (ngSubmit)="save()">
+    <h3>{{ editingId() === null ? 'New department' : 'Edit department' }}</h3>
+    <label>Name <input formControlName="name" /></label>
+    <label>Description (optional) <input formControlName="description" /></label>
+    @if (form.invalid && form.touched) {
+      <small class="bad-text">Name must be 2 to 100 characters; description up to 255.</small>
+    }
+    <button class="primary" type="submit">Save</button>
+  </form>
+}
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>ID</th><th>Name</th><th>Description</th><th></th></tr></thead>
+    <tbody>
+      @for (d of departments(); track d.id) {
+        <tr>
+          <td>{{ d.id }}</td>
+          <td>{{ d.name }}</td>
+          <td>{{ d.description || '-' }}</td>
+          <td class="row-actions">
+            <button (click)="openEdit(d)">Edit</button>
+            <button class="danger" (click)="remove(d)">Delete</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="4">No departments yet.</td></tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<div class="pager">
+  <button [disabled]="page() === 0" (click)="load(page() - 1)">Previous</button>
+  <span>Page {{ page() + 1 }} of {{ totalPages() || 1 }}</span>
+  <button [disabled]="page() + 1 >= totalPages()" (click)="load(page() + 1)">Next</button>
+</div>

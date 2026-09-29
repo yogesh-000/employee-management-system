@@ -1,0 +1,56 @@
+<div class="toolbar">
+  <h2>Leave Approvals ({{ totalElements() }})</h2>
+  <label class="filter">Show
+    <select [value]="status()" (change)="setStatus($any($event.target).value)">
+      @for (s of statuses; track s) { <option [value]="s">{{ s }}</option> }
+    </select>
+  </label>
+</div>
+
+@if (message()) { <div class="ok">{{ message() }}</div> }
+@if (error()) { <div class="bad">{{ error() }}</div> }
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Employee</th><th>Type</th><th>From</th><th>To</th>
+        <th>Reason</th><th>Applied</th><th>Decision</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (l of requests(); track l.id) {
+        <tr>
+          <td>{{ l.employeeName }}</td>
+          <td>{{ l.leaveType }}</td>
+          <td>{{ l.startDate | date: 'dd MMM yyyy' }}</td>
+          <td>{{ l.endDate | date: 'dd MMM yyyy' }}</td>
+          <td class="reason">{{ l.reason }}</td>
+          <td>{{ l.appliedAt | date: 'dd MMM, HH:mm' }}</td>
+          <td>
+            @if (l.status === 'PENDING') {
+              <div class="decide">
+                <input type="text" placeholder="Remarks (optional)" maxlength="255"
+                       (input)="remarks[l.id] = $any($event.target).value" />
+                <button class="approve" (click)="decide(l, 'APPROVED')">Approve</button>
+                <button class="reject" (click)="decide(l, 'REJECTED')">Reject</button>
+              </div>
+            } @else {
+              <span class="badge" [class]="'badge ' + l.status">{{ l.status }}</span>
+              @if (l.approvedBy) { <small> by {{ l.approvedBy }}</small> }
+              @if (l.remarks) { <small class="note">"{{ l.remarks }}"</small> }
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="7">No {{ status().toLowerCase() }} requests.</td></tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<div class="pager">
+  <button [disabled]="page() === 0" (click)="load(page() - 1)">Previous</button>
+  <span>Page {{ page() + 1 }} of {{ totalPages() || 1 }}</span>
+  <button [disabled]="page() + 1 >= totalPages()" (click)="load(page() + 1)">Next</button>
+</div>

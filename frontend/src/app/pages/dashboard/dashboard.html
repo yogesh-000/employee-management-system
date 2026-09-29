@@ -1,0 +1,24 @@
+<header class="navbar">
+  <span class="brand">EMS</span>
+
+  <nav>
+    <a routerLink="/dashboard" routerLinkActive="active">Home</a>
+    @if (auth.hasRole('ADMIN')) {
+      <a routerLink="/employees" routerLinkActive="active">Employees</a>
+      <a routerLink="/departments" routerLinkActive="active">Departments</a>
+    }
+    @if (auth.hasRole('ADMIN', 'MANAGER')) {
+      <a routerLink="/approvals" routerLinkActive="active">Leave Approvals</a>
+    }
+    <a routerLink="/leaves" routerLinkActive="active">My Leaves</a>
+  </nav>
+
+  <div class="user">
+    <span>{{ username }} ({{ role }})</span>
+    <button (click)="auth.logout()">Logout</button>
+  </div>
+</header>
+
+<main class="content">
+  <router-outlet />
+</main>

@@ -1,0 +1,54 @@
+<h2>My Leaves</h2>
+
+@if (message()) { <div class="ok">{{ message() }}</div> }
+@if (error()) { <div class="bad">{{ error() }}</div> }
+
+<form class="form" [formGroup]="form" (ngSubmit)="submit()">
+  <h3>Apply for leave</h3>
+  <div class="grid">
+    <label>Leave type
+      <select formControlName="leaveTypeId">
+        <option [ngValue]="0" disabled>Select...</option>
+        @for (t of leaveTypes(); track t.id) {
+          <option [ngValue]="t.id">{{ t.name }} (max {{ t.maxDays }} days)</option>
+        }
+      </select>
+    </label>
+    <label>Start date <input type="date" formControlName="startDate" [min]="today" /></label>
+    <label>End date <input type="date" formControlName="endDate" [min]="today" /></label>
+  </div>
+  <label>Reason (10 to 500 characters)
+    <textarea rows="3" formControlName="reason"></textarea>
+  </label>
+  @if (form.invalid && form.touched) {
+    <small class="bad-text">Please fill every field correctly.</small>
+  }
+  <button class="primary" type="submit">Submit request</button>
+</form>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Type</th><th>From</th><th>To</th><th>Reason</th><th>Status</th><th>Remarks</th><th></th></tr>
+    </thead>
+    <tbody>
+      @for (l of leaves(); track l.id) {
+        <tr>
+          <td>{{ l.leaveType }}</td>
+          <td>{{ l.startDate | date: 'dd MMM yyyy' }}</td>
+          <td>{{ l.endDate | date: 'dd MMM yyyy' }}</td>
+          <td class="reason">{{ l.reason }}</td>
+          <td><span class="badge" [class]="'badge ' + l.status">{{ l.status }}</span></td>
+          <td>{{ l.remarks || '-' }}</td>
+          <td>
+            @if (l.status === 'PENDING') {
+              <button class="danger" (click)="cancel(l)">Cancel</button>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="7">No leave requests yet.</td></tr>
+      }
+    </tbody>
+  </table>
+</div>

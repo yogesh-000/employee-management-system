@@ -1,0 +1,12 @@
+.navbar { display: flex; align-items: center; gap: 24px; padding: 12px 24px; background: #1e293b; color: #fff; }
+.brand { font-weight: 700; font-size: 18px; }
+nav { display: flex; gap: 16px; flex: 1; }
+.link { cursor: pointer; opacity: .85; }
+.link:hover { opacity: 1; }
+.user { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.user button { padding: 6px 12px; border: 0; border-radius: 6px; cursor: pointer; }
+.content { padding: 24px; }
+nav a { color: #fff; text-decoration: none; opacity: .85; }
+nav a.active, nav a:hover { opacity: 1; font-weight: 600; }
+.link, nav a, .user span { white-space: nowrap; }
+.navbar { flex-wrap: wrap; }
