@@ -39,22 +39,24 @@ A full-stack Employee & Leave Management System built with Spring Boot, Angular,
 
 ## Architecture
 
+```
 employee-management-system/
-├── backend/ # Spring Boot REST API
-│ └── src/main/java/.../employee_management_system/
-│ ├── controller/ # REST endpoints, @PreAuthorize role checks
-│ ├── service/ # Business logic interfaces
-│ ├── service/impl/ # Business logic implementation
-│ ├── repository/ # Spring Data JPA repositories
-│ ├── entity/ # JPA entities
-│ ├── dto/ # Request/response contracts, separate from entities
-│ ├── security/ # JWT filter, JwtService, SecurityUtils (current-user resolution)
-│ ├── exception/ # Custom exceptions + GlobalExceptionHandler
-│ └── config/ # SecurityConfig, CORS
-└── frontend/ # Angular application
-└── src/app/
-├── core/ # Auth service, HTTP interceptor, route guard, API service, models
-└── pages/ # login, dashboard, employees, departments, my-leaves, approvals
+├── backend/                # Spring Boot REST API
+│   └── src/main/java/.../employee_management_system/
+│       ├── controller/      # REST endpoints, @PreAuthorize role checks
+│       ├── service/         # Business logic interfaces
+│       ├── service/impl/    # Business logic implementation
+│       ├── repository/      # Spring Data JPA repositories
+│       ├── entity/          # JPA entities
+│       ├── dto/             # Request/response contracts, separate from entities
+│       ├── security/        # JWT filter, JwtService, SecurityUtils (current-user resolution)
+│       ├── exception/       # Custom exceptions + GlobalExceptionHandler
+│       └── config/          # SecurityConfig, CORS
+└── frontend/                # Angular application
+    └── src/app/
+        ├── core/            # Auth service, HTTP interceptor, route guard, API service, models
+        └── pages/           # login, dashboard, employees, departments, my-leaves, approvals
+```
 
 
 **Request flow:**
