@@ -30,4 +30,5 @@ public class EmployeeUpdateRequest {
     private LocalDate joiningDate;
     @NotNull @Min(1)
     private Long departmentId;
+    private Long managerId;
 }

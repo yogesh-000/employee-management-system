@@ -8,6 +8,7 @@ import com.yogesh.employee_management_system.entity.Employee;
 import com.yogesh.employee_management_system.entity.Role;
 import com.yogesh.employee_management_system.entity.User;
 import com.yogesh.employee_management_system.enums.EmployeeStatus;
+import com.yogesh.employee_management_system.exception.BusinessValidationException;
 import com.yogesh.employee_management_system.exception.DuplicateResourceException;
 import com.yogesh.employee_management_system.exception.ResourceNotFoundException;
 import com.yogesh.employee_management_system.repository.DepartmentRepository;
@@ -184,6 +185,15 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(()-> new
                         ResourceNotFoundException("Department not found."));
 
+        Employee manager = null;
+        if (request.getManagerId() != null) {
+            if (request.getManagerId().equals(id)) {
+                throw new BusinessValidationException("An employee cannot be their own manager.");
+            }
+            manager = employeeRepository.findByIdAndIsDeletedFalse(request.getManagerId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Manager not found."));
+        }
+
         employee.setFirstName(request.getFirstName());
         employee.setLastName(request.getLastName());
         employee.setEmail(request.getEmail());
@@ -193,6 +203,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setSalary(request.getSalary());
         employee.setJoiningDate(request.getJoiningDate());
         employee.setDepartment(department);
+        employee.setManager(manager);
 
         Employee updatedEmployee = employeeRepository.save(employee);
 
