@@ -11,7 +11,7 @@ export interface Page<T> {
 export interface EmployeeUpdateRequest {
   firstName: string; lastName: string; email: string; phone: string;
   gender: string; designation: string; salary: number; joiningDate: string;
-  departmentId: number;
+  departmentId: number;managerId: number | null;
 }
 
 export interface Department { id: number; name: string; description: string; }

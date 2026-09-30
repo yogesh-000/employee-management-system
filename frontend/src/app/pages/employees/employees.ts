@@ -62,6 +62,7 @@ editForm = this.fb.nonNullable.group({
   salary: [0, [Validators.required, Validators.min(1)]],
   joiningDate: ['', Validators.required],
   departmentId: [0, [Validators.required, Validators.min(1)]],
+  managerId: [null as number | null],
 });
 
   ngOnInit() {
@@ -128,11 +129,14 @@ editForm = this.fb.nonNullable.group({
     });
   }
 
-  openEdit(e: Employee) {
-  this.showForm.set(false); // close the add form if it's open
+openEdit(e: Employee) {
+  this.showForm.set(false);
   this.editingId.set(e.id);
 
   const dept = this.departments().find((d) => d.name === e.department);
+  const mgr = this.employees().find(
+    (x) => e.manager === `${x.firstName} ${x.lastName}` && x.id !== e.id
+  );
 
   this.editForm.setValue({
     firstName: e.firstName,
@@ -144,6 +148,7 @@ editForm = this.fb.nonNullable.group({
     salary: e.salary,
     joiningDate: e.joiningDate,
     departmentId: dept ? dept.id : 0,
+    managerId: mgr ? mgr.id : null,
   });
 }
 
