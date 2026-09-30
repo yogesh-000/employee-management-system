@@ -215,5 +215,5 @@ A few decisions worth highlighting, since they came from fixing real gaps during
 
 Yogeshwaran. C
 
-[GitHub] (https://github.com/yogesh-000) · [LinkedIn] (https://www.linkedin.com/in/yogeshwaran-c/)
+[GitHub](https://github.com/yogesh-000) · [LinkedIn](https://www.linkedin.com/in/yogeshwaran-c/)
 
